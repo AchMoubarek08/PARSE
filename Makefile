@@ -1,8 +1,8 @@
 
 # CPPFLAGS = -I/Users/fstitou/.brew/opt/readline/inlclude
 # LDFLAGS = -L/Users/fstitou/.brew/opt/readline/lib
-CPPFLAGS = -I/goinfre/fstitou/homebrew/opt/readline/include
-LDFLAGS = -L/goinfre/fstitou/homebrew/opt/readline/lib
+CPPFLAGS = -I/goinfre/amoubare/homebrew/opt/readline/include
+LDFLAGS = -L/goinfre/amoubare/homebrew/opt/readline/lib
 
 NAME = minishell
 
