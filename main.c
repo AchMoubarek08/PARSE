@@ -13,6 +13,32 @@ void	print_lexer(t_lex *lex)
 	printf("indice : %i\n", lex->i);
 }
 
+t_token	*init_token(char *val, int type)
+{
+	t_token	*token;
+
+	token = (t_token *)malloc(sizeof(t_token));
+	if (!token)
+		return (NULL);
+	token->value = val;
+	token->next = NULL;
+	token->e_type = type;
+	return (token);
+}
+
+t_token	*lst_add_back(t_token *lst, t_token *new)
+{
+	t_token	*tmp;
+
+	if (!lst)
+		return (new);
+	tmp = lst;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new;
+	return (lst);
+}
+
 int	ft_strlen(char *str)
 {
 	int	i;
@@ -108,28 +134,38 @@ void	advance_lex(t_lex *lex)
 }
 void	token_squote(t_lex *lex, t_token *tokens)
 {
-	tokens->e_type = SQUOTE;
-	tokens->value = ft_strdup("");
+	char *val;
+	t_token *new;
+
+	val = ft_strdup("");
+	new = NULL;
 	advance_lex(lex);
 	while (lex->c != '\'')
 	{
-		tokens->value = ft_strjoin(tokens->value, ft_strndup(&lex->c, 1));
+		val = ft_strjoin(val, ft_strndup(&lex->c, 1));
 		advance_lex(lex);
 	}
 	advance_lex(lex);
+	new = init_token(val, SQUOTE);
+	tokens = lst_add_back(tokens, new);
 }
 
 void	token_dquote(t_lex *lex, t_token *tokens)
 {
-	tokens->e_type = DQUOTE;
-	tokens->value = ft_strdup("");
+	char *val;
+	t_token *new;
+
+	val = ft_strdup("");
+	new = NULL;
 	advance_lex(lex);
 	while (lex->c != '"')
 	{
-		tokens->value = ft_strjoin(tokens->value, ft_strndup(&lex->c, 1));
+		val = ft_strjoin(val, ft_strndup(&lex->c, 1));
 		advance_lex(lex);
 	}
 	advance_lex(lex);
+	new = init_token(val, DQUOTE);
+	tokens = lst_add_back(tokens, new);
 }
 
 void	create_tokens(t_lex *lex, t_token *tokens)
@@ -161,7 +197,7 @@ void	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
     parse = malloc(sizeof(t_parse));
 	lex = malloc(sizeof(t_lex));
 	tokens = malloc(sizeof(t_token));
-    if (!parse || !lex)
+    if (!parse || !lex || !tokens)
         return (NULL);
     parse->ags = NULL;
     parse->cmd = NULL;
@@ -188,6 +224,7 @@ int	main(int ac, char *av[], char **env)
 		if (!line)
 			exit(0);
 		init_create_tokens(tokens, parse, line);
+		print_tokens(tokens);
 		// create_commands(tokens, &commands);
 	}
 }
