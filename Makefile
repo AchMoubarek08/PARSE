@@ -15,7 +15,7 @@ all : $(NAME)
 
 $(NAME):
 	
-	@gcc $(SRC) $(LDFLAGS) $(CPPFLAGS)  -o $(NAME)
+	@gcc $(SRC) $(LDFLAGS) $(CPPFLAGS)  -lreadline -o $(NAME)
 	@echo "Mino 👍👍👍"
 
 clean :

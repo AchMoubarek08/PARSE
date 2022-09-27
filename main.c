@@ -1,4 +1,33 @@
 #include "minishell.h"
+
+int	ft_isdigit(int c)
+{
+	return (c >= '0' && c <= '9');
+}
+
+int	kayn_token(char *str)
+{
+	char	*tokens;
+	int		i;
+	int		j;
+
+	tokens = "$><|'\"";
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		j = 0;
+		while (tokens[j])
+		{
+			if (str[i] == tokens[j] || str[i] == ' ')
+				return (i);
+			j++;
+		}
+		i++;
+	}
+	return (0);
+}
+
 void	print_tokens(t_token *tokens)
 {
 	while (tokens)
@@ -167,8 +196,79 @@ void	token_dquote(t_lex *lex, t_token *tokens)
 	new = init_token(val, DQUOTE);
 	tokens = lst_add_back(tokens, new);
 }
+void	token_pipe(t_lex *lex, t_token *tokens)
+{
+	char *val;
+	t_token *new;
 
-void	create_tokens(t_lex *lex, t_token *tokens)
+	val = ft_strdup("|");
+	new = NULL;
+	advance_lex(lex);
+	new = init_token(val, PIPE);
+	tokens = lst_add_back(tokens, new);
+}
+void	token_less(t_lex *lex, t_token *tokens)
+{
+	char *val;
+	t_token *new;
+
+	val = ft_strdup("");
+	new = NULL;
+	advance_lex(lex);
+	if	(lex->cmd[lex->i] == '<')
+	{
+		advance_lex(lex);
+		val = ft_strdup("<<");
+		new = init_token(val, LESSANDLESS);
+	}
+	else
+	{
+		val = ft_strdup(">");
+		new = init_token(val, LESS);
+	}
+	tokens = lst_add_back(tokens, new);
+}
+
+void	token_great(t_lex *lex, t_token *tokens)
+{
+	char *val;
+	t_token *new;
+
+	val = ft_strdup("");
+	new = NULL;
+	advance_lex(lex);
+	if	(lex->cmd[lex->i] == '>')
+	{
+		advance_lex(lex);
+		val = ft_strdup(">>");
+		new = init_token(val, GREATANDGREAT);
+	}
+	else
+	{
+		val = ft_strdup(">");
+		new = init_token(val, GREAT);
+	}
+	tokens = lst_add_back(tokens, new);
+}
+
+void	token_dollar(t_lex *lex, t_token *tokens)
+{
+	char *val;
+	t_token *new;
+
+	val = ft_strdup("$");
+	new = NULL;
+	advance_lex(lex);
+	if (lex->c == '0' || !ft_isdigit(lex->c))
+	{
+		val = ft_strjoin(val, ft_strndup(&lex->c, 1));
+		advance_lex(lex);
+	}
+	new = init_token(val, DOLLAR);
+	tokens = lst_add_back(tokens, new);
+}
+
+t_token	*create_tokens(t_lex *lex, t_token *tokens)
 {
 	while(lex->c)
 	{
@@ -178,20 +278,21 @@ void	create_tokens(t_lex *lex, t_token *tokens)
 			token_squote(lex, tokens);
 		else if (lex->c == '\"')
 			token_dquote(lex, tokens);
-		// else if (lex->c == '|')
-		// 	token_pipe(lex, tokens);
-		// else if (lex->c == '>')
-		// 	token_great(lex, tokens);
-		// else if (lex->c == '<')
-		// 	token_less(lex, tokens);
-		// else if (lex->c == '$')
-		// 	token_dollar(lex, tokens);
+		else if (lex->c == '|')
+			token_pipe(lex, tokens);
+		else if (lex->c == '>')
+			token_great(lex, tokens);
+		else if (lex->c == '<')
+			token_less(lex, tokens);
+		else if (lex->c == '$')
+			token_dollar(lex, tokens);
 		// else
 		// 	token_word(lex);
 	}
+	return(tokens);
 }
 
-void	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
+t_token	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
 {
 	t_lex	*lex;
     parse = malloc(sizeof(t_parse));
@@ -205,8 +306,8 @@ void	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
 	lex->c = line[0];
 	lex->cmd = line;
 	lex->i = 0;
-	create_tokens(lex, tokens);
-	return (NULL);
+	tokens = create_tokens(lex, tokens);
+	return (tokens);
 }
 
 int	main(int ac, char *av[], char **env)
@@ -215,15 +316,14 @@ int	main(int ac, char *av[], char **env)
 	t_token	*tokens;
     char    *line;
 
-	tokens = NULL;
 	(void)ac;
 	(void)av;
-	while (line)
+	while (1)
 	{
-		line = get_next_line(0);
+		line = readline("MISSI-1.0$ ");
 		if (!line)
 			exit(0);
-		init_create_tokens(tokens, parse, line);
+		tokens = init_create_tokens(tokens, parse, line);
 		print_tokens(tokens);
 		// create_commands(tokens, &commands);
 	}
