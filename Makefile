@@ -6,16 +6,16 @@ LDFLAGS = -L/goinfre/amoubare/homebrew/opt/readline/lib
 
 NAME = minishell
 
-SRC = main.c
+SRC = main.c get_next_line_utils.c get_next_line.c\
 
-OBJ = main.o
+OBJ = main.o get_next_line_utils.o get_next_line.o\
 
 
 all : $(NAME)
 
 $(NAME):
 	
-	@gcc $(SRC) $(LDFLAGS) $(CPPFLAGS) -lreadline  -o $(NAME)
+	@gcc $(SRC) $(LDFLAGS) $(CPPFLAGS)  -o $(NAME)
 	@echo "Mino 👍👍👍"
 
 clean :

@@ -15,8 +15,6 @@
 # include <stdio.h>
 # include <stddef.h>
 # include <limits.h>
-# include <readline/readline.h>
-# include <readline/history.h>
 
 typedef struct	s_lex
 {
@@ -52,7 +50,18 @@ typedef struct s_parse
 	struct s_parse	*next;
 }		t_parse;
 
+// get_next_line
+void	nadi(char **stock, char **ligne);
+char	*ft_substr_gnl(char const *s, unsigned int start, size_t len);
+char	*ft_strjoin_gnl(char const *s1, char const *s2);
+size_t	ft_strlen_gnl(const char *str);
+char	*ft_strdup_gnl(const char *s);
+int		ft_int_strchr_gnl(const char *s, int c);
+char	*ft_free(char **lost);
+char	*get_next_line(int fd);
+
+
 void	advance_lex(t_lex *lex);
-void	*init_tokens_cmd(t_token *tokens, t_parse *parse, char *line);
+void	*init_create_tokens(t_token *tokens, t_parse *parse, char *line);
 void	print_lexer(t_lex *lex);
 #endif

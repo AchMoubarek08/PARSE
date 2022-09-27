@@ -1,9 +1,18 @@
 #include "minishell.h"
+void	print_tokens(t_token *tokens)
+{
+	while (tokens)
+	{
+		printf("type: %d, value: %s\n", tokens->e_type, tokens->value);
+		tokens = tokens->next;
+	}
+}
 void	print_lexer(t_lex *lex)
 {
 	printf("char : %c\n", lex->c);
 	printf("indice : %i\n", lex->i);
 }
+
 int	ft_strlen(char *str)
 {
 	int	i;
@@ -41,6 +50,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	str[i] = '\0';
 	return (str);
 }
+
 char *ft_strndup(char *str, int i)
 {
 	char	*dup;
@@ -132,21 +142,20 @@ void	create_tokens(t_lex *lex, t_token *tokens)
 			token_squote(lex, tokens);
 		else if (lex->c == '\"')
 			token_dquote(lex, tokens);
-		else if (lex->c == '|')
-			token_pipe(lex, tokens);
-		else if (lex->c == '>')
-			token_great(lex, tokens);
-		else if (lex->c == '<')
-			token_less(lex, tokens);
-		else if (lex->c == '$')
-			token_dollar(lex, tokens);
-		else
-			token_word(lex);
-
+		// else if (lex->c == '|')
+		// 	token_pipe(lex, tokens);
+		// else if (lex->c == '>')
+		// 	token_great(lex, tokens);
+		// else if (lex->c == '<')
+		// 	token_less(lex, tokens);
+		// else if (lex->c == '$')
+		// 	token_dollar(lex, tokens);
+		// else
+		// 	token_word(lex);
 	}
 }
 
-void	*init_tokens_cmd(t_token *tokens, t_parse *parse, char *line)
+void	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
 {
 	t_lex	*lex;
     parse = malloc(sizeof(t_parse));
@@ -175,10 +184,10 @@ int	main(int ac, char *av[], char **env)
 	(void)av;
 	while (1)
 	{
-		line = readline("MISSI-1.0$ ");
+		line = get_next_line(0);
 		if (!line)
 			exit(0);
-		init_tokens_cmd(tokens, parse, line);
+		init_create_tokens(tokens, parse, line);
 		// create_commands(tokens, &commands);
 	}
 }
