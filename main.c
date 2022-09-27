@@ -196,7 +196,7 @@ void	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
 	t_lex	*lex;
     parse = malloc(sizeof(t_parse));
 	lex = malloc(sizeof(t_lex));
-	tokens = malloc(sizeof(t_token));
+	tokens = init_token(NULL, 0);
     if (!parse || !lex || !tokens)
         return (NULL);
     parse->ags = NULL;
@@ -218,7 +218,7 @@ int	main(int ac, char *av[], char **env)
 	tokens = NULL;
 	(void)ac;
 	(void)av;
-	while (1)
+	while (line)
 	{
 		line = get_next_line(0);
 		if (!line)
