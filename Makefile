@@ -6,9 +6,9 @@ LDFLAGS = -L/goinfre/amoubare/homebrew/opt/readline/lib
 
 NAME = minishell
 
-SRC = main.c get_next_line_utils.c get_next_line.c\
+SRC = main.c tokenize.c utils.c get_next_line_utils.c get_next_line.c\
 
-OBJ = main.o get_next_line_utils.o get_next_line.o\
+OBJ = main.o tokenize.o utils.o get_next_line_utils.o get_next_line.o\
 
 
 all : $(NAME)

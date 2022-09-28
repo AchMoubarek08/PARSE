@@ -64,8 +64,22 @@ char	*get_next_line(int fd);
 
 
 void	advance_lex(t_lex *lex);
+t_token	*lst_add_back(t_token *lst, t_token *new);
+int		ft_isdigit(int c);
+int		ft_is_space(char *str);
+char	*ft_strdup(char *str);
+char	*ft_strndup(char *str, int i);
+char	*ft_strjoin(char *s1, char *s2);
+int		ft_strlen(char *str);
 t_token	*init_create_tokens(t_token *tokens, t_parse *parse, char *line);
 void	print_lexer(t_lex *lex);
 t_token	*lst_add_back(t_token *lst, t_token *new);
+t_token	*init_token(char *val, int type);
 t_token	*create_tokens(t_lex *lex, t_token *tokens);
+void	token_dollar(t_lex *lex, t_token *tokens);
+void	token_great(t_lex *lex, t_token *tokens);
+void	token_less(t_lex *lex, t_token *tokens);
+void	token_pipe(t_lex *lex, t_token *tokens);
+void	token_dquote(t_lex *lex, t_token *tokens);
+void	token_squote(t_lex *lex, t_token *tokens);
 #endif
