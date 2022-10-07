@@ -82,4 +82,5 @@ void	token_less(t_lex *lex, t_token *tokens);
 void	token_pipe(t_lex *lex, t_token *tokens);
 void	token_dquote(t_lex *lex, t_token *tokens);
 void	token_squote(t_lex *lex, t_token *tokens);
+void	token_word(t_lex *lex, t_token *tokens);
 #endif

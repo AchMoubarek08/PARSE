@@ -76,8 +76,8 @@ t_token	*create_tokens(t_lex *lex, t_token *tokens)
 			token_less(lex, tokens);
 		else if (lex->c == '$')
 			token_dollar(lex, tokens);
-		// else
-		// 	token_word(lex);
+		else
+			token_word(lex, tokens);
 	}
 	return(tokens);
 }
