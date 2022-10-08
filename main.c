@@ -27,9 +27,22 @@ int	kayn_token(char *str)
 
 void	print_tokens(t_token *tokens)
 {
+	char *type;
 	while (tokens)
 	{
-		printf("type: %d, value: %s\n", tokens->e_type, tokens->value);
+		if(tokens->e_type == 0)
+			type = strdup("WORD");
+		else if(tokens->e_type == 4)
+			type = strdup("PIPE");
+		else if(tokens->e_type == 5)
+			type = strdup("GnG ");
+		else if(tokens->e_type == 7)
+			type = strdup("G   ");
+		else if(tokens->e_type == 6)
+			type = strdup("LnL ");
+		else if(tokens->e_type == 8)
+			type = strdup("L   ");
+		printf("type: %s   value: %s\n", type, tokens->value);
 		tokens = tokens->next;
 	}
 }
@@ -64,18 +77,18 @@ t_token	*create_tokens(t_lex *lex, t_token *tokens)
 	{
 		if(lex->c == 32 || lex-> c == 9)
 			advance_lex(lex);
-		else if (lex->c == '\'')
-			token_squote(lex, tokens);
-		else if (lex->c == '\"')
-			token_dquote(lex, tokens);
+		// else if (lex->c == '\'')
+		// 	token_squote(lex, tokens);
+		// else if (lex->c == '\"')
+		// 	token_dquote(lex, tokens);
 		else if (lex->c == '|')
 			token_pipe(lex, tokens);
 		else if (lex->c == '>')
 			token_great(lex, tokens);
 		else if (lex->c == '<')
 			token_less(lex, tokens);
-		else if (lex->c == '$')
-			token_dollar(lex, tokens);
+		// else if (lex->c == '$')
+		// 	token_dollar(lex, tokens);
 		else
 			token_word(lex, tokens);
 	}
