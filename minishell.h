@@ -76,6 +76,7 @@ void	print_lexer(t_lex *lex);
 t_token	*lst_add_back(t_token *lst, t_token *new);
 t_token	*init_token(char *val, int type);
 t_token	*create_tokens(t_lex *lex, t_token *tokens);
+void	print_tokens(t_token *tokens);
 void	token_dollar(t_lex *lex, t_token *tokens);
 void	token_great(t_lex *lex, t_token *tokens);
 void	token_less(t_lex *lex, t_token *tokens);

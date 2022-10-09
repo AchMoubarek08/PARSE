@@ -203,21 +203,44 @@ void	token_word(t_lex *lex, t_token *tokens)
 	new = init_token(val, WORD);
 	tokens = lst_add_back(tokens, new);
 }
-char	*remove_quotes(t_token *tokens)
+char	*remove_quotes(char *value)
 {
+	int i,j;
+	i,j = 0;
+	char q;
+	char *result = ft_strdup("");
+	while(value[i] != '\0')
+	{
+		if(value[i] == 34 || value[i] == 39)
+		{
+			q = value[i];
+			i++;
+			while(value[i] && value[i] != q)
+			{
+				result = ft_strjoin(result, ft_strndup(&value[i], 1));
+				i++;
+			}
+		}
+		else
+			result = ft_strjoin(result, ft_strndup(&value[i], 1));
+		i++;
+	}
+	return (result);
 }
 void	expand_all(t_token *tokens)
 {
 	//"ok"$zbi
-	char *result = strdup("");
+	char *result = ft_strdup("");
 	int i = 0;
-	while (tokens->e_type != END)
+	t_token	*tmp;
+	tmp = tokens->next;
+	while (tmp->e_type != END)
 	{
-		if(tokens->e_type == WORD)
+		if(tmp->e_type == WORD)
 		{
-			if(!there_is_dollar(tokens->value))
-				result = remove_quotes(tokens->value);
+			if(!there_is_dollar(tmp->value))
+				result = remove_quotes(tmp->value);
 		}
-		tokens = tokens->next;
+		tmp = tmp->next;
 	}
 }
