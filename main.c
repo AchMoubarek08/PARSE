@@ -42,6 +42,8 @@ void	print_tokens(t_token *tokens)
 			type = strdup("LnL ");
 		else if(tokens->e_type == 8)
 			type = strdup("L   ");
+		else if(tokens->e_type == 10)
+			type = strdup("END ");
 		printf("type: %s   value: %s\n", type, tokens->value);
 		tokens = tokens->next;
 	}
@@ -70,28 +72,22 @@ void	advance_lex(t_lex *lex)
 	lex->i++;
 	lex->c = lex->cmd[lex->i];
 }
-
 t_token	*create_tokens(t_lex *lex, t_token *tokens)
 {
 	while(lex->c)
 	{
 		if(lex->c == 32 || lex-> c == 9)
 			advance_lex(lex);
-		// else if (lex->c == '\'')
-		// 	token_squote(lex, tokens);
-		// else if (lex->c == '\"')
-		// 	token_dquote(lex, tokens);
 		else if (lex->c == '|')
 			token_pipe(lex, tokens);
 		else if (lex->c == '>')
 			token_great(lex, tokens);
 		else if (lex->c == '<')
 			token_less(lex, tokens);
-		// else if (lex->c == '$')
-		// 	token_dollar(lex, tokens);
 		else
 			token_word(lex, tokens);
 	}
+	end_token(tokens);
 	return(tokens);
 }
 
@@ -127,6 +123,7 @@ int	main(int ac, char *av[], char **env)
 		if (!line)
 			exit(0);
 		tokens = init_create_tokens(tokens, parse, line);
-		print_tokens(tokens);
+		tokens = expand_all(tokens);
+		// print_tokens(tokens);
 	}
 }

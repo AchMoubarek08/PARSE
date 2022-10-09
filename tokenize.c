@@ -16,7 +16,19 @@ int	is_token(char c)
 	}
 	return (0);
 }
+int		there_is_dollar(char *str)
+{
+	int i;
 
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$')
+			return (1);
+		i++;
+	}
+	return (0);
+}
 void	token_squote(t_lex *lex, t_token *tokens)
 {
 	char *val;
@@ -52,6 +64,7 @@ void	token_dquote(t_lex *lex, t_token *tokens)
 	new = init_token(val, DQUOTE);
 	tokens = lst_add_back(tokens, new);
 }
+
 void	token_pipe(t_lex *lex, t_token *tokens)
 {
 	char *val;
@@ -63,6 +76,16 @@ void	token_pipe(t_lex *lex, t_token *tokens)
 	new = init_token(val, PIPE);
 	tokens = lst_add_back(tokens, new);
 }
+
+void	end_token(t_token *tokens)
+{
+	t_token *new;
+
+	new = NULL;
+	new = init_token("", END);
+	tokens = lst_add_back(tokens, new);
+}
+
 void	token_less(t_lex *lex, t_token *tokens)
 {
 	char *val;
@@ -177,24 +200,24 @@ void	token_word(t_lex *lex, t_token *tokens)
 			}	
 		}
 	}
-	// expand_dollars(&val);
 	new = init_token(val, WORD);
 	tokens = lst_add_back(tokens, new);
 }
-
-// void	expand_dollars(char **word)
-// {
-// 	//"ok"$zbi
-// 	char *result = strdup("");
-// 	int i = 0;
-// 	while (*word[i])
-// 	{
-// 		if (*word[i] == 39)
-// 		{
-// 			i++;
-// 			while(*word[i] != 39)
-// 				result = ft_strjoin(result, ft_strndup(&word[i], 1));
-// 			i++;
-// 		}
-// 	}
-// }
+char	*remove_quotes(t_token *tokens)
+{
+}
+void	expand_all(t_token *tokens)
+{
+	//"ok"$zbi
+	char *result = strdup("");
+	int i = 0;
+	while (tokens->e_type != END)
+	{
+		if(tokens->e_type == WORD)
+		{
+			if(!there_is_dollar(tokens->value))
+				result = remove_quotes(tokens->value);
+		}
+		tokens = tokens->next;
+	}
+}
