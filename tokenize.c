@@ -232,44 +232,84 @@ char	*remove_quotes(char *value)
 	return (result);
 }
 
+int	is_alpha(char c)
+{
+	if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+		return (1);
+	return (0);
+}
+
+int is_digit(char c)
+{
+	if(c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
+
 char	*expand_dollar(char *value)
 {
-	// $ok"ok"
-	// ok"ok"$PATH
 	int i = 0;
+	char *expnd = ft_strdup("");
 	char *result = ft_strdup("");
-	while(value[i])
+	while(value[i] != '\0')
 	{
 		if(value[i] == '$')
 		{
 			i++;
-			if(!value[i])
-				result = ft_strdup("$");
+			if(value[i] == '$')
+			{
+				result = ft_strjoin(result, "$$");
+			}
+			else if(value[i] == '?')
+				result = ft_strjoin(result, "exit_status");
+			else if(value[i] && !is_alpha(value[i]) && !is_digit(value[i]))
+				continue ;
+			else
+			{
+				while((is_alpha(value[i]) || is_digit(value[i])))
+				{
+					expnd = ft_strjoin(expnd, ft_strndup(&value[i], 1));
+					i++;
+				}
+				result = ft_strjoin(result, "X");
+				i--;
+			}
 		}
 		else
-		{
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
-			i++;
-		}
+		i++;
+	}
+	return(result);
+}
+void	print_array(char **array)
+{
+	int i = 0;
+	while(array[i] != NULL)
+	{
+		printf("%s\n", array[i]);
+		i++;
 	}
 }
-
 t_token	*expand_all(t_token *tokens)
 {
 	char *result = ft_strdup("");
 	int i = 0;
 	t_token	*tmp;
+	char **arr = malloc(sizeof(char *) * 100);
 	tokens = tokens->next;
 	while (tokens->e_type != END)
 	{
 		if(tokens->e_type == WORD)
 		{
 			if (there_is_dollar(tokens->value))
-				result = expand_dollar(tokens->value);
-			else
-				result = remove_quotes(tokens->value);
+				tokens->value = expand_dollar(tokens->value);
+			result = remove_quotes(tokens->value);
 		}
+		arr[i] = ft_strdup(result);
+		i++;
 		tokens = tokens->next;
 	}
+	arr[i] = NULL;
+	print_array(arr);
 	return(tmp);
 }
