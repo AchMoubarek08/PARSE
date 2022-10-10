@@ -203,6 +203,7 @@ void	token_word(t_lex *lex, t_token *tokens)
 	new = init_token(val, WORD);
 	tokens = lst_add_back(tokens, new);
 }
+
 char	*remove_quotes(char *value)
 {
 	int i;
@@ -230,9 +231,31 @@ char	*remove_quotes(char *value)
 	}
 	return (result);
 }
+
+char	*expand_dollar(char *value)
+{
+	// $ok"ok"
+	// ok"ok"$PATH
+	int i = 0;
+	char *result = ft_strdup("");
+	while(value[i])
+	{
+		if(value[i] == '$')
+		{
+			i++;
+			if(!value[i])
+				result = ft_strdup("$");
+		}
+		else
+		{
+			result = ft_strjoin(result, ft_strndup(&value[i], 1));
+			i++;
+		}
+	}
+}
+
 t_token	*expand_all(t_token *tokens)
 {
-	//"ok"$zbi
 	char *result = ft_strdup("");
 	int i = 0;
 	t_token	*tmp;
@@ -242,14 +265,10 @@ t_token	*expand_all(t_token *tokens)
 		if(tokens->e_type == WORD)
 		{
 			if (there_is_dollar(tokens->value))
-			{
-				result = expand_dollar(result);
-				tokens->value = result;
-			}
-			else 
+				result = expand_dollar(tokens->value);
+			else
 				result = remove_quotes(tokens->value);
 		}
-		printf("result = %s\n", result);
 		tokens = tokens->next;
 	}
 	return(tmp);

@@ -124,6 +124,5 @@ int	main(int ac, char *av[], char **env)
 			exit(0);
 		tokens = init_create_tokens(tokens, parse, line);
 		tokens = expand_all(tokens);
-		// print_tokens(tokens);
 	}
 }
