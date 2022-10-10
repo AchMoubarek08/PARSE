@@ -205,8 +205,8 @@ void	token_word(t_lex *lex, t_token *tokens)
 }
 char	*remove_quotes(char *value)
 {
-	int i,j;
-	i,j = 0;
+	int i;
+	i = 0;
 	char q;
 	char *result = ft_strdup("");
 	while(value[i] != '\0')
@@ -220,27 +220,37 @@ char	*remove_quotes(char *value)
 				result = ft_strjoin(result, ft_strndup(&value[i], 1));
 				i++;
 			}
+			i++;
 		}
-		else
+		if (value[i] != '\0' && value[i] != 34 && value[i] != 39)
+		{
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
-		i++;
+			i++;
+		}
 	}
 	return (result);
 }
-void	expand_all(t_token *tokens)
+t_token	*expand_all(t_token *tokens)
 {
 	//"ok"$zbi
 	char *result = ft_strdup("");
 	int i = 0;
 	t_token	*tmp;
-	tmp = tokens->next;
-	while (tmp->e_type != END)
+	tokens = tokens->next;
+	while (tokens->e_type != END)
 	{
-		if(tmp->e_type == WORD)
+		if(tokens->e_type == WORD)
 		{
-			if(!there_is_dollar(tmp->value))
-				result = remove_quotes(tmp->value);
+			if (there_is_dollar(tokens->value))
+			{
+				result = expand_dollar(result);
+				tokens->value = result;
+			}
+			else 
+				result = remove_quotes(tokens->value);
 		}
-		tmp = tmp->next;
+		printf("result = %s\n", result);
+		tokens = tokens->next;
 	}
+	return(tmp);
 }
