@@ -253,12 +253,28 @@ char	*expand_dollar(char *value)
 	char *result = ft_strdup("");
 	while(value[i] != '\0')
 	{
-		if(value[i] == '$')
+		if(value[i] == 39)
+		{
+			result = ft_strjoin(result, ft_strndup(&value[i], 1));
+			i++;
+			while(value[i] && value[i] != 39)
+			{
+				result = ft_strjoin(result, ft_strndup(&value[i], 1));
+				i++;
+			}
+			result = ft_strjoin(result, ft_strndup(&value[i], 1));
+		}
+		else if(value[i] == '$')
 		{
 			i++;
 			if(value[i] == '$')
 			{
 				result = ft_strjoin(result, "$$");
+			}
+			else if(value[i] == 39 || value[i] == 34)
+			{
+				result = ft_strjoin(result, "$");
+				continue ;
 			}
 			else if(value[i] == '?')
 				result = ft_strjoin(result, "exit_status");
@@ -279,6 +295,7 @@ char	*expand_dollar(char *value)
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
 		i++;
 	}
+	printf("result = %s\n", result);
 	return(result);
 }
 void	print_array(char **array)
