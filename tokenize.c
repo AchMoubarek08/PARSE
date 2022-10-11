@@ -251,34 +251,19 @@ char	*expand_dollar(char *value)
 	int i = 0;
 	char *expnd = ft_strdup("");
 	char *result = ft_strdup("");
+	char q;
 	while(value[i] != '\0')
 	{
-		if(value[i] == 39)
-		{
-			result = ft_strjoin(result, ft_strndup(&value[i], 1));
-			i++;
-			while(value[i] && value[i] != 39)
-			{
-				result = ft_strjoin(result, ft_strndup(&value[i], 1));
-				i++;
-			}
-			result = ft_strjoin(result, ft_strndup(&value[i], 1));
-		}
-		else if(value[i] == '$')
+		if(value[i] == '$')
 		{
 			i++;
 			if(value[i] == '$')
 			{
 				result = ft_strjoin(result, "$$");
 			}
-			else if(value[i] == 39 || value[i] == 34)
-			{
-				result = ft_strjoin(result, "$");
-				continue ;
-			}
 			else if(value[i] == '?')
 				result = ft_strjoin(result, "exit_status");
-			else if(value[i] && !is_alpha(value[i]) && !is_digit(value[i]))
+			else if((value[i] && !is_alpha(value[i]) && !is_digit(value[i])))
 				continue ;
 			else
 			{
@@ -290,6 +275,18 @@ char	*expand_dollar(char *value)
 				result = ft_strjoin(result, "X");
 				i--;
 			}
+		}
+		else if(value[i] == 39 || value[i] == 34)
+		{
+			q = value[i];
+			result = ft_strjoin(result, ft_strndup(&value[i], 1));
+			i++;
+			while(value[i] != q)
+			{
+				result = ft_strjoin(result, ft_strndup(&value[i], 1));
+				i++;
+			}
+			result = ft_strjoin(result, ft_strndup(&value[i], 1));
 		}
 		else
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
