@@ -359,7 +359,6 @@ char	*expand_dollar(char *value, int *flag)
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
 		i++;
 	}
-	printf("result = %s\n", result);
 	return(result);
 }
 void	print_array(char **array)
