@@ -246,15 +246,21 @@ int is_digit(char c)
 	return (0);
 }
 
-char	*expand_dollar(char *value)
+int	is_alphanum(char c)
 {
-	int i = 0;
-	char *expnd = ft_strdup("");
+	if(is_alpha(c) || is_digit(c))
+		return (1);
+	return (0);
+}
+char *dq_content(char *value)
+{
+	int i;
 	char *result = ft_strdup("");
-	char q;
-	while(value[i] != '\0')
+	char *expnd = ft_strdup("");
+	i = 0;
+	while(value[i])
 	{
-		if(value[i] == '$')
+		if(value[i] == '$' && value[i + 1] && is_alphanum(value[i + 1]))
 		{
 			i++;
 			if(value[i] == '$')
@@ -263,8 +269,15 @@ char	*expand_dollar(char *value)
 			}
 			else if(value[i] == '?')
 				result = ft_strjoin(result, "exit_status");
-			else if((value[i] && !is_alpha(value[i]) && !is_digit(value[i])))
+			else if((value[i] == 39 || value[i] == 34))
+			{
 				continue ;
+			}
+			else if((value[i] && !is_alpha(value[i]) && !is_digit(value[i])))
+			{
+				result = ft_strjoin(result, "$");
+				continue ;
+			}
 			else
 			{
 				while((is_alpha(value[i]) || is_digit(value[i])))
@@ -276,12 +289,66 @@ char	*expand_dollar(char *value)
 				i--;
 			}
 		}
-		else if(value[i] == 39 || value[i] == 34)
+		else
+			result = ft_strjoin(result, ft_strndup(&value[i], 1));
+		i++;
+	}
+	return (result);
+}
+char	*expand_dollar(char *value, int *flag)
+{
+	int i = 0;
+	char *expnd = ft_strdup("");
+	char *result = ft_strdup("");
+	char *dq = ft_strdup("");
+	while(value[i] != '\0')
+	{
+		if(value[i] == '$')
 		{
-			q = value[i];
+			i++;
+			if(value[i] == '$')
+			{
+				result = ft_strjoin(result, "$$");
+			}
+			else if(value[i] == '?')
+				result = ft_strjoin(result, "exit_status");
+			else if((value[i] == 39 || value[i] == 34))
+			{
+				continue ;
+			}
+			else if((value[i] && !is_alpha(value[i]) && !is_digit(value[i])))
+			{
+				result = ft_strjoin(result, "$");
+				continue ;
+			}
+			else
+			{
+				while((is_alpha(value[i]) || is_digit(value[i])))
+				{
+					expnd = ft_strjoin(expnd, ft_strndup(&value[i], 1));
+					i++;
+				}
+				result = ft_strjoin(result, "X");
+				i--;
+			}
+		}
+		else if(value[i] == 34)
+		{
+			*flag = 1;
+			i++;
+			while(value[i] != 34)
+			{
+				dq = ft_strjoin(dq, ft_strndup(&value[i], 1));
+				i++;
+			}
+			result = ft_strjoin(result, dq_content(dq));
+		}
+		else if(value[i] == 39)
+		{
+
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
 			i++;
-			while(value[i] != q)
+			while(value[i] != 39)
 			{
 				result = ft_strjoin(result, ft_strndup(&value[i], 1));
 				i++;
@@ -308,16 +375,23 @@ t_token	*expand_all(t_token *tokens)
 {
 	char *result = ft_strdup("");
 	int i = 0;
+	int flag = 0;
 	t_token	*tmp;
 	char **arr = malloc(sizeof(char *) * 100);
 	tokens = tokens->next;
 	while (tokens->e_type != END)
 	{
+		flag = 0;
 		if(tokens->e_type == WORD)
 		{
-			if (there_is_dollar(tokens->value))
-				tokens->value = expand_dollar(tokens->value);
-			result = remove_quotes(tokens->value);
+			if(there_is_dollar(tokens->value))
+			{
+				tokens->value = expand_dollar(tokens->value, &flag);
+			}
+			if(flag == 0)
+				result = remove_quotes(tokens->value);
+			else
+				result = tokens->value;
 		}
 		arr[i] = ft_strdup(result);
 		i++;
