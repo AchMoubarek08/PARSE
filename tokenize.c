@@ -260,7 +260,7 @@ char *dq_content(char *value)
 	i = 0;
 	while(value[i])
 	{
-		if(value[i] == '$' && value[i + 1] && is_alphanum(value[i + 1]))
+		if(value[i] == '$' && value[i + 1] && (is_alphanum(value[i + 1]) || value[i + 1] == '?'))
 		{
 			i++;
 			if(value[i] == '$')
@@ -335,10 +335,11 @@ char	*expand_dollar(char *value, int *flag)
 		else if(value[i] == 34)
 		{
 			dq = ft_strdup("");
-			*flag = 1;
 			i++;
 			while(value[i] && value[i] != 34)
 			{
+				if (value[i] == 39)
+					*flag = 1;
 				dq = ft_strjoin(dq, ft_strndup(&value[i], 1));
 				i++;
 			}
