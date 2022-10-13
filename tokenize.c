@@ -334,9 +334,10 @@ char	*expand_dollar(char *value, int *flag)
 		}
 		else if(value[i] == 34)
 		{
+			dq = ft_strdup("");
 			*flag = 1;
 			i++;
-			while(value[i] != 34)
+			while(value[i] && value[i] != 34)
 			{
 				dq = ft_strjoin(dq, ft_strndup(&value[i], 1));
 				i++;
