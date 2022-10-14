@@ -203,6 +203,14 @@ void	token_word(t_lex *lex, t_token *tokens)
 	new = init_token(val, WORD);
 	tokens = lst_add_back(tokens, new);
 }
+int ft_strlen(char *str)
+{
+	int i = 0;
+
+	while(str[i] != '\0')
+		i++;
+	return (i);
+}
 void print_tab(int *tab)
 {
 	int i;
@@ -218,7 +226,6 @@ char	*remove_quotes(char *value, int *sequences)
 {
 	int i;
 	i = 0;
-	int o  = 0;
 	char q;
 	char *result = ft_strdup("");
 	print_tab(sequences);
@@ -365,7 +372,7 @@ char	*expand_dollar(char *value, int *sequences)
 				i++;
 			}
 			j = 0;
-			while(j < strlen(dq_content(dq)))
+			while(j < ft_strlen(dq_content(dq)))
 			{
 				sequences[o] = 1;
 				o++;

@@ -19,16 +19,6 @@ int	ft_isdigit(int c)
 	return (c >= '0' && c <= '9');
 }
 
-int	ft_strlen(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*str;
