@@ -204,26 +204,35 @@ void	token_word(t_lex *lex, t_token *tokens)
 	tokens = lst_add_back(tokens, new);
 }
 
-char	*remove_quotes(char *value)
+char	*remove_quotes(char *value, int *sequences)
 {
 	int i;
 	i = 0;
+	int o  = 0;
 	char q;
 	char *result = ft_strdup("");
 	while(value[i] != '\0')
 	{
-		if(value[i] == 34 || value[i] == 39)
+		if(sequences[i] == 2)
 		{
-			q = value[i];
-			i++;
-			while(value[i] && value[i] != q)
+			if(value[i] == 34 || value[i] == 39)
+			{
+				q = value[i];
+				i++;
+				while(value[i] && value[i] != q)
+				{
+					result = ft_strjoin(result, ft_strndup(&value[i], 1));
+					i++;
+				}
+				i++;
+			}
+			if (value[i] != '\0' && value[i] != 34 && value[i] != 39)
 			{
 				result = ft_strjoin(result, ft_strndup(&value[i], 1));
 				i++;
 			}
-			i++;
 		}
-		if (value[i] != '\0' && value[i] != 34 && value[i] != 39)
+		else
 		{
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
 			i++;
@@ -295,23 +304,36 @@ char *dq_content(char *value)
 	}
 	return (result);
 }
-char	*expand_dollar(char *value, int *flag)
+void print_tab(int *tab)
+{
+	int i;
+	i = 0;
+	while(tab[i])
+	{
+		printf("%d ", tab[i]);
+		i++;
+	}
+	printf("\n");
+}
+char	*expand_dollar(char *value, int *sequences)
 {
 	int i = 0;
+	int o = 0;
+	int j = 0;
 	char *expnd = ft_strdup("");
 	char *result = ft_strdup("");
 	char *dq = ft_strdup("");
 	while(value[i] != '\0')
 	{
 		if(value[i] == '$')
-		{
+		{	
 			i++;
 			if(value[i] == '$')
 			{
 				result = ft_strjoin(result, "$$");
 			}
 			else if(value[i] == '?')
-				result = ft_strjoin(result, "exit_status");
+				result = ft_strjoin(result, "0");
 			else if((value[i] == 39 || value[i] == 34))
 			{
 				continue ;
@@ -338,29 +360,42 @@ char	*expand_dollar(char *value, int *flag)
 			i++;
 			while(value[i] && value[i] != 34)
 			{
-				if (value[i] == 39)
-					*flag = 1;
 				dq = ft_strjoin(dq, ft_strndup(&value[i], 1));
 				i++;
 			}
+			j = 0;
+			while(j < strlen(dq_content(dq)))
+			{
+				sequences[o] = 1;
+				o++;
+				j++;
+			}
+			j = 0;
 			result = ft_strjoin(result, dq_content(dq));
 		}
 		else if(value[i] == 39)
 		{
-
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
 			i++;
+			sequences[o] = 2;
+			o++;
 			while(value[i] != 39)
 			{
 				result = ft_strjoin(result, ft_strndup(&value[i], 1));
 				i++;
+				sequences[o] = 2;
+				o++;
 			}
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
+			sequences[o] = 2;
+			o++;
 		}
 		else
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
 		i++;
 	}
+	print_tab(sequences);
+	printf("result = %s\n", result);
 	return(result);
 }
 void	print_array(char **array)
@@ -376,23 +411,20 @@ t_token	*expand_all(t_token *tokens)
 {
 	char *result = ft_strdup("");
 	int i = 0;
-	int flag = 0;
+	int *sequences;
 	t_token	*tmp;
 	char **arr = malloc(sizeof(char *) * 100);
 	tokens = tokens->next;
 	while (tokens->e_type != END)
 	{
-		flag = 0;
 		if(tokens->e_type == WORD)
 		{
+			sequences = malloc(sizeof(int) * 100000);
 			if(there_is_dollar(tokens->value))
 			{
-				tokens->value = expand_dollar(tokens->value, &flag);
+				tokens->value = expand_dollar(tokens->value, sequences);
 			}
-			if(flag == 0)
-				result = remove_quotes(tokens->value);
-			else
-				result = tokens->value;
+			result = remove_quotes(tokens->value, sequences);
 		}
 		arr[i] = ft_strdup(result);
 		i++;

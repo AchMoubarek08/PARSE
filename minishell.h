@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 # include <unistd.h>
+# include <strings.h>
 # include <stdlib.h>
 # include <ctype.h>
 # include <sys/wait.h>
