@@ -339,6 +339,8 @@ char	*expand_dollar(char *value, int *sequences)
 			if(value[i] == '$')
 			{
 				result = ft_strjoin(result, "$$");
+				sequences[o++] = 1;
+				sequences[o++] = 1;
 			}
 			else if(value[i] == '?')
 				result = ft_strjoin(result, "0");
@@ -401,10 +403,10 @@ char	*expand_dollar(char *value, int *sequences)
 		else
 		{
 			result = ft_strjoin(result, ft_strndup(&value[i], 1));
-			sequences[o] = 2;
+			sequences[o] = 1;
+			o++;
 		}
 		i++;
-		o++;
 	}
 	return(result);
 }
