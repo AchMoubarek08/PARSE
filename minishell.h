@@ -88,5 +88,5 @@ void	token_word(t_lex *lex, t_token *tokens);
 void	end_token(t_token *tokens);
 
 
-t_token *expand_all(t_token *tokens);
+t_token *parsing(t_token *tokens);
 #endif

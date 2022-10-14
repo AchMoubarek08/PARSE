@@ -123,6 +123,6 @@ int	main(int ac, char *av[], char **env)
 		if (!line)
 			exit(0);
 		tokens = init_create_tokens(tokens, parse, line);
-		tokens = expand_all(tokens);
+		tokens = parsing(tokens);
 	}
 }
