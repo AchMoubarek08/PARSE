@@ -419,6 +419,16 @@ void	print_array(char **array)
 		i++;
 	}
 }
+void	fill_sequences(int len, int *sequences)
+{
+	int i = 0;
+	while(i < len)
+	{
+		sequences[i] = 2;
+		i++;
+	}
+}
+
 t_token	*parsing(t_token *tokens)
 {
 	char *result = ft_strdup("");
@@ -435,6 +445,10 @@ t_token	*parsing(t_token *tokens)
 			if(there_is_dollar(tokens->value))
 			{
 				tokens->value = expand_dollar(tokens->value, sequences);
+			}
+			else
+			{
+				fill_sequences(ft_strlen(tokens->value), sequences);
 			}
 			result = remove_quotes(tokens->value, sequences);
 		}
