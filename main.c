@@ -91,17 +91,13 @@ t_token	*create_tokens(t_lex *lex, t_token *tokens)
 	return(tokens);
 }
 
-t_token	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
+t_token	*init_create_tokens(t_token *tokens, char *line)
 {
 	t_lex	*lex;
-    parse = malloc(sizeof(t_parse));
 	lex = malloc(sizeof(t_lex));
 	tokens = init_token(NULL, 0);
-    if (!parse || !lex || !tokens)
+    if (!lex || !tokens)
         return (NULL);
-    parse->ags = NULL;
-    parse->cmd = NULL;
-    parse->next = NULL;
 	lex->c = line[0];
 	lex->cmd = line;
 	lex->i = 0;
@@ -109,6 +105,39 @@ t_token	*init_create_tokens(t_token *tokens, t_parse *parse, char *line)
 	return (tokens);
 }
 
+t_parse	*init_cmd(void)
+{
+	t_parse	*command;
+
+	command = (t_parse *)malloc(sizeof(t_parse));
+	if (!command)
+		return (NULL);
+	command->cmd = NULL;
+	command->argv = (char **)realloc_array(NULL, ft_strdup(""));
+	command->next = NULL;
+	return (command);
+}
+t_parse	*add_command_back(t_parse *lst, t_parse *new)
+{
+	t_parse	*tmp;
+
+	tmp = lst;
+	if (!lst)
+		return (new);
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new;
+	return (lst);
+}
+void	print_parse(t_parse *parse)
+{
+	while (parse)
+	{
+		printf("cmd: %s\n", parse->cmd);
+		printf("argv: %s\n", parse->argv[1]);
+		parse = parse->next;
+	}
+}
 int	main(int ac, char *av[], char **env)
 {
 	t_parse	*parse;
@@ -122,7 +151,10 @@ int	main(int ac, char *av[], char **env)
 		line = readline("MISSI-1.0$ ");
 		if (!line)
 			exit(0);
-		tokens = init_create_tokens(tokens, parse, line);
-		tokens = parsing(tokens);
+		parse = init_cmd();
+		tokens = init_create_tokens(tokens, line);
+		tokens = parsing(tokens, &parse);
+		fill_tparse(tokens, &parse);
+		print_parse(parse);
 	}
 }

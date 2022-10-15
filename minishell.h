@@ -49,7 +49,7 @@ typedef struct s_token
 typedef struct s_parse
 {
 	char			*cmd;
-	char			**ags;
+	char			**argv;
 	struct s_parse	*next;
 }		t_parse;
 
@@ -72,7 +72,7 @@ char	*ft_strdup(char *str);
 char	*ft_strndup(char *str, int i);
 char	*ft_strjoin(char *s1, char *s2);
 int		ft_strlen(char *str);
-t_token	*init_create_tokens(t_token *tokens, t_parse *parse, char *line);
+t_token	*init_create_tokens(t_token *tokens, char *line);
 void	print_lexer(t_lex *lex);
 t_token	*lst_add_back(t_token *lst, t_token *new);
 t_token	*init_token(char *val, int type);
@@ -88,5 +88,11 @@ void	token_word(t_lex *lex, t_token *tokens);
 void	end_token(t_token *tokens);
 
 
-t_token *parsing(t_token *tokens);
+t_token	*parsing(t_token *tokens, t_parse **parse);
+t_parse	*init_cmd(void);
+void	*realloc_array(char **arg, char *str);
+void	fill_tparse(t_token *tokens, t_parse **parse);
+t_parse	*add_command_back(t_parse *lst, t_parse *new);
+void	print_parse(t_parse *parse);
+
 #endif

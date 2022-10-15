@@ -228,7 +228,6 @@ char	*remove_quotes(char *value, int *sequences)
 	i = 0;
 	char q;
 	char *result = ft_strdup("");
-	print_tab(sequences);
 	while(value[i] != '\0')
 	{
 		if(sequences[i] != 1)
@@ -429,13 +428,106 @@ void	fill_sequences(int len, int *sequences)
 	}
 }
 
-t_token	*parsing(t_token *tokens)
+void	*realloc_array(char **arg, char *str)
 {
-	char *result = ft_strdup("");
+	char	**new_arg;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (arg && arg[i])
+		i++;
+	new_arg = (char **)malloc(sizeof(char *) * (i + 2));
+	while (arg && j < i)
+	{
+		new_arg[j] = ft_strdup(arg[j]);
+		j++;
+	}
+	new_arg[j++] = ft_strdup(str);
+	new_arg[j] = NULL;
+	return (new_arg);
+}
+void	ft_putchar_fd(char c, int fd)
+{
+	write(fd, &c, 1);
+}
+void	ft_putstr_fd(char *s, int fd)
+{
+	int i;
+
+	i = 0;
+	if (s)
+	{
+		while (s[i])
+		{
+			ft_putchar_fd(s[i], fd);
+			i++;
+		}
+	}
+}
+
+void	errors(int exit_status)
+{
+	if(exit_status == 2)
+	{
+		ft_putstr_fd("Minishell : unclosed quote!", 2);
+		ft_putchar_fd('\n', 2);
+	}
+	else if(exit_status == 258)
+	{
+		ft_putstr_fd("Minishell : syntax error near unexpected token", 2);
+		ft_putchar_fd('\n', 2);
+	}
+	else if (exit_status == 3)
+	{
+		ft_putstr_fd("Minishell : pipe open!", 2);
+		ft_putchar_fd('\n', 2);
+	}
+}
+
+t_parse	*add_command(t_parse *commad)
+{
+	t_parse	*new;
+
+	new = init_cmd();
+	commad = add_command_back(commad, new);
+	return (commad);
+}
+
+void	fill_tparse(t_token *tokens, t_parse **parse)
+{
+	t_parse *tmp;
+
+	tmp = *parse;
+	while(tokens)
+	{
+		if(tokens->e_type == WORD)
+		{
+			if(!tmp->cmd)
+				tmp->cmd = ft_strdup(tokens->value);
+			else
+				tmp->argv = realloc_array(tmp->argv, tokens->value);
+			tokens = tokens->next;
+		}
+		if(tokens->e_type == PIPE || tokens->e_type == END)
+		{
+			if(tokens->next && tokens->e_type == PIPE && tokens->next->e_type == END)
+			{
+				errors(3);
+				return;
+			}
+			tmp = add_command(tmp);
+			tmp = tmp->next;
+			tokens = tokens->next;
+		}
+	}
+}
+t_token	*parsing(t_token *tokens, t_parse **parse)
+{
 	int i = 0;
 	int *sequences;
-	t_token	*tmp;
-	char **arr = malloc(sizeof(char *) * 100);
+	t_token	*tmp = tokens->next;
 	tokens = tokens->next;
 	while (tokens->e_type != END)
 	{
@@ -450,13 +542,10 @@ t_token	*parsing(t_token *tokens)
 			{
 				fill_sequences(ft_strlen(tokens->value), sequences);
 			}
-			result = remove_quotes(tokens->value, sequences);
+			tokens->value = remove_quotes(tokens->value, sequences);
 		}
-		arr[i] = ft_strdup(result);
 		i++;
 		tokens = tokens->next;
 	}
-	arr[i] = NULL;
-	print_array(arr);
 	return(tmp);
 }
