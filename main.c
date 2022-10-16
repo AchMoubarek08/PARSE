@@ -172,10 +172,9 @@ int	main(int ac, char *av[], char **env)
 		parse = init_cmd();
 		tokens = init_create_tokens(tokens, line);
 		tokens = parsing(tokens, &parse);
-		// print_tokens(tokens);
-		// exit(0);
+		print_tokens(tokens);
 		fill_tparse(tokens, &parse);
-		print_parse(parse);
+		// print_parse(parse);
 		add_history(line);
 	}
 }

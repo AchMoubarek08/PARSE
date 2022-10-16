@@ -289,7 +289,16 @@ char *dq_content(char *value)
 		if(value[i] == '$' && value[i + 1] && (is_alphanum(value[i + 1]) || value[i + 1] == '?'))
 		{
 			i++;
-			if(value[i] == '$')
+			if(is_digit(value[i]))
+			{
+				i++;
+				while(value[i] && !is_token(value[i]))
+				{
+					result = ft_strjoin(result, ft_strndup(&value[i], 1));
+					i++;
+				}
+			}
+			else if(value[i] == '$')
 			{
 				result = ft_strjoin(result, "$$");
 			}
@@ -335,7 +344,16 @@ char	*expand_dollar(char *value, int *sequences)
 		if(value[i] == '$')
 		{	
 			i++;
-			if(value[i] == '$')
+			if(is_digit(value[i]))
+			{
+				i++;
+				while(value[i] && !is_token(value[i]))
+				{
+					result = ft_strjoin(result, ft_strndup(&value[i], 1));
+					i++;
+				}
+			}
+			else if(value[i] == '$')
 			{
 				result = ft_strjoin(result, "$$");
 				sequences[o++] = 1;
