@@ -131,10 +131,28 @@ t_parse	*add_command_back(t_parse *lst, t_parse *new)
 }
 void	print_parse(t_parse *parse)
 {
+	int i;
 	while (parse)
 	{
-		printf("cmd: %s\n", parse->cmd);
-		printf("argv: %s\n", parse->argv[1]);
+		i = 0;
+		if (parse->cmd)
+			printf("cmd: %s\n", parse->cmd);
+		while(parse->argv[i])
+		{
+			printf("argv: %s\n", parse->argv[i]);
+			i++;
+		}
+		if(parse->redir)
+		{
+			while(parse->redir)
+			{
+				printf("redir type : %d\n", parse->redir->e_type);
+				printf("redir: %s\n", parse->redir->file);
+				printf("redir fdin: %d\n", parse->redir->fdin);
+				printf("redir fdout: %d\n", parse->redir->fdout);
+				parse->redir = parse->redir->next;
+			}
+		}
 		parse = parse->next;
 	}
 }
@@ -154,7 +172,10 @@ int	main(int ac, char *av[], char **env)
 		parse = init_cmd();
 		tokens = init_create_tokens(tokens, line);
 		tokens = parsing(tokens, &parse);
+		// print_tokens(tokens);
+		// exit(0);
 		fill_tparse(tokens, &parse);
 		print_parse(parse);
+		add_history(line);
 	}
 }

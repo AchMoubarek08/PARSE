@@ -46,10 +46,21 @@ typedef struct s_token
 	} e_type;
 }		t_token;
 
+typedef struct s_redir
+{
+	char			*file;
+	int				e_type;
+	int				fdout;
+	int				fdin;
+	struct s_redir	*next;
+
+}		t_redir;
+
 typedef struct s_parse
 {
 	char			*cmd;
 	char			**argv;
+	t_redir			*redir;
 	struct s_parse	*next;
 }		t_parse;
 

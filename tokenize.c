@@ -495,8 +495,43 @@ t_parse	*add_command(t_parse *commad)
 	return (commad);
 }
 
+t_redir	*init_redir(char *val, int type)
+{
+	t_redir	*redir;
+
+	redir = (t_redir *)malloc(sizeof(t_redir));
+	if (!redir)
+		return (NULL);
+	redir->file = ft_strdup(val);
+	redir->next = NULL;
+	redir->e_type = type;
+	return (redir);
+}
+
+t_redir	*lst_add_back_redir(t_redir *lst, t_redir *new)
+{
+	t_redir	*tmp;
+
+	if (!lst)
+		return (new);
+	tmp = lst;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new;
+	return (lst);
+}
+
+t_redir	*add_redir(t_redir *redir, char *val, int type)
+{
+	t_redir	*new;
+
+	new = init_redir(val, type);
+	redir = lst_add_back_redir(redir, new);
+	return (redir);
+}
 void	fill_tparse(t_token *tokens, t_parse **parse)
 {
+	int type;
 	t_parse *tmp;
 
 	tmp = *parse;
@@ -509,6 +544,19 @@ void	fill_tparse(t_token *tokens, t_parse **parse)
 			else
 				tmp->argv = realloc_array(tmp->argv, tokens->value);
 			tokens = tokens->next;
+		}
+		else if (tokens->e_type == GREAT || tokens->e_type == LESS
+			|| tokens->e_type == LESSANDLESS || tokens->e_type == GREATANDGREAT)
+		{
+				if(tokens->next && tokens->next->e_type != WORD)
+					errors(258);
+				type = tokens->e_type;
+				tokens = tokens->next;
+				if(!tmp->redir)
+					tmp->redir = init_redir(tokens->value, type);
+				else
+					tmp->redir = add_redir(tmp->redir, tokens->value, type);
+				tokens = tokens->next;
 		}
 		if(tokens->e_type == PIPE || tokens->e_type == END)
 		{
@@ -525,15 +573,14 @@ void	fill_tparse(t_token *tokens, t_parse **parse)
 }
 t_token	*parsing(t_token *tokens, t_parse **parse)
 {
-	int i = 0;
 	int *sequences;
 	t_token	*tmp = tokens->next;
 	tokens = tokens->next;
+	sequences = malloc(sizeof(int) * 100000);
 	while (tokens->e_type != END)
 	{
 		if(tokens->e_type == WORD)
 		{
-			sequences = malloc(sizeof(int) * 100000);
 			if(there_is_dollar(tokens->value))
 			{
 				tokens->value = expand_dollar(tokens->value, sequences);
@@ -544,7 +591,12 @@ t_token	*parsing(t_token *tokens, t_parse **parse)
 			}
 			tokens->value = remove_quotes(tokens->value, sequences);
 		}
-		i++;
+		else if(tokens->e_type == LESSANDLESS)
+		{
+			tokens = tokens->next;
+			fill_sequences(ft_strlen(tokens->value), sequences);
+			tokens->value = remove_quotes(tokens->value, sequences);
+		}
 		tokens = tokens->next;
 	}
 	return(tmp);
