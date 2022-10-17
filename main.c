@@ -1,6 +1,5 @@
+
 #include "minishell.h"
-
-
 
 int	kayn_token(char *str)
 {
@@ -157,6 +156,146 @@ void	print_parse(t_parse *parse)
 		parse = parse->next;
 	}
 }
+void	*f_malloc(size_t size)
+{
+	void	*tmp;
+
+	tmp = malloc(size);
+	if (!tmp)
+		return (NULL);
+	g_vars.alloc[g_vars.index] = tmp;
+	g_vars.index++;
+	return (tmp);
+}
+
+static int	countword(char const *s, char c)
+{
+	int	i;
+	int	count;
+
+	i = 0;
+	count = 0;
+	while (s[i])
+	{
+		if ((i == 0 || s[i - 1] == c) && s[i] != c)
+			count++;
+		i++;
+	}
+	return (count);
+}
+
+char	*allocwords(char const *s, char c, int i)
+{
+	int		j;
+	char	*str;
+
+	j = i;
+	while (s[j] != c && s[j])
+	{
+		j++;
+	}
+	str = f_malloc(sizeof(char) * j + 1);
+	if (str == NULL)
+		return (0);
+	j = 0;
+	while (s[i] && s[i] != c)
+	{
+		str[j] = s[i];
+		i++;
+		j++;
+	}
+	str[j] = '\0';
+	return (str);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**str;
+	int		i;
+	int		j;
+
+	if (!s)
+		return (0);
+	str = f_malloc(sizeof(char *) * (countword(s, c) + 1));
+	if (str == NULL)
+		return (0);
+	i = 0;
+	j = 0;
+	while (s[i])
+	{
+		if ((i == 0 || s[i - 1] == c) && s[i] != c)
+		{
+			str[j] = allocwords(s, c, i);
+			j++;
+		}
+		i++;
+	}
+	str[j] = NULL;
+	return (str);
+}
+
+t_env	*lst_new(char *key, char sep, char *val)
+{
+	t_env	*new;
+
+	new = f_malloc(sizeof(t_env));
+	new->key = key;
+	new->val = val;
+	new->sep = sep;
+	new->next = NULL;
+	return (new);
+}
+
+void	lst_add_backenv(t_env **lst, t_env *new)
+{
+	t_env	*tmp;
+
+	tmp = *lst;
+	if (!new)
+		return ;
+	new->next = NULL;
+	if (!*lst)
+		*lst = new;
+	else
+	{
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = new;
+	}
+}
+char	*my_getenv(t_env *env, char *key)
+{
+	t_env	*tmp;
+
+	tmp = (env);
+	while (tmp)
+	{
+		if (strcmp(tmp->key, key) == 0)
+			return (tmp->val);
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+void	init_env(char **env)
+{
+	char	*key;
+	char	*val;
+	int		i;
+	char	**tmp;
+
+	i = 0;
+	while (env[i])
+	{
+		tmp = ft_split(env[i], '=');
+		key = tmp[0];
+		val = tmp[1];
+		lst_add_backenv(&g_vars.my_env, lst_new(key, '=',
+				val));
+		i++;
+	}
+	lst_add_backenv(&g_vars.my_env, lst_new("0", '=', "minishell"));
+}
+
 int	main(int ac, char *av[], char **env)
 {
 	t_parse	*parse;
@@ -165,6 +304,7 @@ int	main(int ac, char *av[], char **env)
 
 	(void)ac;
 	(void)av;
+	init_env(env);
 	while (1)
 	{
 		line = readline("MISSI-1.0$ ");

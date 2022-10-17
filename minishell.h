@@ -64,7 +64,28 @@ typedef struct s_parse
 	struct s_parse	*next;
 }		t_parse;
 
-// get_next_line
+typedef struct s_env
+{
+	char			*key;
+	char			*val;
+	char			sep;
+	struct s_env	*next;
+}		t_env;
+
+typedef struct s_minishell
+{
+	char	*line;
+	int		exit_status;
+	int		exit_sig;
+	int		g_err;
+	pid_t	pid;
+	void	*alloc[1000000];
+	int		index;
+	t_env	*my_env;
+}		t_minishell;
+
+t_minishell	g_vars;
+
 void	nadi(char **stock, char **ligne);
 char	*ft_substr_gnl(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin_gnl(char const *s1, char const *s2);
@@ -105,5 +126,6 @@ void	*realloc_array(char **arg, char *str);
 void	fill_tparse(t_token *tokens, t_parse **parse);
 t_parse	*add_command_back(t_parse *lst, t_parse *new);
 void	print_parse(t_parse *parse);
+char	*my_getenv(t_env *env, char *key);
 
 #endif
