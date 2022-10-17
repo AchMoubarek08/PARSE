@@ -114,6 +114,7 @@ t_parse	*init_cmd(void)
 		return (NULL);
 	command->cmd = NULL;
 	command->argv = (char **)realloc_array(NULL, ft_strdup(""));
+	command->redir = NULL;
 	command->next = NULL;
 	return (command);
 }
@@ -142,7 +143,7 @@ void	print_parse(t_parse *parse)
 			printf("argv: %s\n", parse->argv[i]);
 			i++;
 		}
-		if(parse->redir)
+		if(parse->redir && parse->redir->file)
 		{
 			while(parse->redir)
 			{
@@ -172,9 +173,9 @@ int	main(int ac, char *av[], char **env)
 		parse = init_cmd();
 		tokens = init_create_tokens(tokens, line);
 		tokens = parsing(tokens, &parse);
-		print_tokens(tokens);
+		// print_tokens(tokens);
 		fill_tparse(tokens, &parse);
-		// print_parse(parse);
+		print_parse(parse);
 		add_history(line);
 	}
 }

@@ -353,6 +353,12 @@ char	*expand_dollar(char *value, int *sequences)
 					i++;
 				}
 			}
+			else if(value[i] == '\0')
+			{
+				result = ft_strjoin(result, "$");
+				sequences[o++] = 1;
+				break;
+			}
 			else if(value[i] == '$')
 			{
 				result = ft_strjoin(result, "$$");

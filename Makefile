@@ -15,7 +15,7 @@ all : $(NAME)
 
 $(NAME):
 	
-	@gcc $(SRC) $(LDFLAGS) $(CPPFLAGS)  -lreadline -o $(NAME)
+	@gcc -fsanitize=address -g $(SRC) $(LDFLAGS) $(CPPFLAGS)  -lreadline -o $(NAME)
 	@echo "Mino 👍👍👍"
 
 clean :
